@@ -13,7 +13,7 @@ function FieldGroup({ id, label, help, ...props }) {
     );
 }
 
-class FundTable extends Component {
+class FundsTable extends Component {
     constructor() {
         super();
         this.state = {
@@ -33,7 +33,7 @@ class FundTable extends Component {
         const first_100_funds = _.slice(funds, 0, 100);
         const { time } = this.state;
         const data = first_100_funds.filter(fund => {
-            if (time != "")
+            if (time !== "")
                 return fund.Predicted_Time.indexOf(time) > -1 || fund.AlertTime.indexOf(time) > -1 || fund.Max_PredictedTime.indexOf(time) > -1;
             else
                 return true;
@@ -81,4 +81,4 @@ class FundTable extends Component {
     }
 }
 
-export default FundTable;
+export default FundsTable;

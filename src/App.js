@@ -3,7 +3,8 @@ import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css';
 
-import FundTable from './FundTable';
+import FundsTable from './FundsTable';
+import FundsBubbleChart from './FundsBubbleChart';
 
 class App extends Component {
   render() {
@@ -13,7 +14,8 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <FundTable />
+        <FundsBubbleChart />
+        <FundsTable />
       </div>
     );
   }
