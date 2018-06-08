@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import * as d3 from "d3";
-import funds from './data/funds.json';
+import funds_data from './data/funds.json';
 import RealTimeMultiChart from './d3_util/RealTimeMultiChart';
 import './d3_util/d3_chart.css';
+
+const funds = _.sortBy(funds_data, ["Predicted_Time"])
 
 class FundsBubbleChart extends Component {
     constructor() {
@@ -11,6 +13,8 @@ class FundsBubbleChart extends Component {
         this.state = {
             chart: []
         };
+        this.colors = ["green", "yellow", "red"];
+        this.i=-1;
     }
 
     componentWillMount() {
@@ -18,7 +22,7 @@ class FundsBubbleChart extends Component {
             .title("Chart Title")
             .yTitle("Categories")
             .xTitle("Time")
-            .yDomain(["Category1"]) // initial y domain (note array)
+            .yDomain(["Predicted_Time", "AlertTime", "Max_PredictedTime"]) // initial y domain (note array)
             .border(true)
             .width(900)
             .height(350);
@@ -56,12 +60,12 @@ class FundsBubbleChart extends Component {
 
     dataGenerator = () => {
         if (this.state.chart == null || this.state.chart == 'undefined') return;
-        let d = -1;
+        
         const shapes = ["rect", "circle"];
         setTimeout(() => {
             // add categories dynamically
-            d++;
-            switch (d) {
+            this.i++;
+            /*switch (d) {
                 case 5:
                     this.state.chart.yDomain(["Category1", "Category2"]);
                     break;
@@ -69,44 +73,37 @@ class FundsBubbleChart extends Component {
                     this.state.chart.yDomain(["Category1", "Category2", "Category3"]);
                     break;
                 default:
-            }
+            } */
             // output a sample for each category, each interval (five seconds)
             if (this.state.chart != null && this.state.chart != undefined && this.state.chart != '') {
                 this.state.chart.yDomain().forEach((cat, i) => {
+                    //console.log('cat, i', cat, i)
                     // create randomized timestamp for this category data item
-                    const now = new Date(new Date().getTime() + i * (Math.random() - 0.5) * 1000);
+                    const d = new Date();
+                    const now = new Date(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${funds[this.i][cat]}`);
+                    console.log('now', now);
+                    //const now = new Date(new Date().getTime() + (+funds[d][cat]));
                     // create new data item
                     let obj;
                     const doSimple = false;
-                    if (doSimple) {
-                        obj = {
-                            // simple data item (simple black circle of constant size)
-                            time: now,
-                            color: "black",
-                            opacity: 1,
-                            category: "Category" + (i + 1),
-                            type: "circle",
-                            size: 5,
-                        };
-                    } else {
                         obj = {
                             // complex data item; four attributes (type, color, opacity and size) are changing dynamically with each iteration (as an example)
                             time: now,
-                            color: this.color(d % 10),
+                            color: this.colors[i],
                             opacity: Math.max(Math.random(), 0.3),
-                            category: "Category" + (i + 1),
+                            category: cat,
                             //type: shapes[Math.round(Math.random() * (shapes.length - 1))], // the module currently doesn't support dynamically changed svg types (need to add key function to data, or method to dynamically replace svg object – tbd)
                             type: "circle",
                             size: Math.max(Math.round(Math.random() * 12), 4),
                         };
-                    }
                     // send the datum to the chart
                     this.state.chart.datum(obj);
                 });
             }
             // drive data into the chart at average interval of five seconds
             // here, set the timeout to roughly five seconds
-            this.timeout = Math.round(this.timeScale(this.normal()));
+            //this.timeout = Math.round(this.timeScale(this.normal()));
+            this.timeout=500*this.i;
             // do forever
             this.dataGenerator();
         }, this.timeout);
