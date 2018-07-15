@@ -1,0 +1,22 @@
+export default {
+  today: 'Today',
+  now: 'Now',
+  backToToday: 'Back to today',
+  ok: 'Ok',
+  cancel: 'Cancel',
+  clear: 'Clear',
+  month: 'Month',
+  year: 'Year',
+  timeSelect: 'Select time',
+  dateSelect: 'Select date',
+  yearFormat: 'YYYY',
+  monthFormat: 'MMMM',
+  dateFormat: 'MM/DD/YYYY',
+  dayFormat: 'D',
+  dateTimeFormat: 'M/D/YYYY HH:mm:ss',
+  monthBeforeYear: true,
+  quickSelectWeek: 'This week',
+  quickSelectMonth: 'This month',
+  quickSelectQuarter: 'This quarter',
+  quickSelectYear: 'This year'
+};

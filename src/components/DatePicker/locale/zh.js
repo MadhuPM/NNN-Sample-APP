@@ -1,0 +1,22 @@
+export default {
+  today: '今天',
+  now: '此刻',
+  backToToday: '返回今天',
+  ok: '确定',
+  cancel: '取消',
+  timeSelect: '选择时间',
+  dateSelect: '选择日期',
+  clear: '清除',
+  month: '月',
+  year: '年',
+  yearFormat: 'YYYY',
+  monthFormat: 'MMMM',
+  dayFormat: 'D日',
+  dateFormat: 'YYYY年M月D日',
+  dateTimeFormat: 'YYYY年M月D日 HH时mm分ss秒',
+  quickSelectWeek: '这一周',
+  quickSelectMonth: '这个月',
+  quickSelectQuarter: '本季度',
+  monthBeforeYear: true,
+  quickSelectYear: '本年度'
+};

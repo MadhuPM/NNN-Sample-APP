@@ -1,0 +1,20 @@
+export default {
+  today: 'Hoje',
+  now: 'Agora',
+  backToToday: 'Hoje',
+  ok: 'Ok',
+  clear: 'Limpar',
+  month: 'Mês',
+  year: 'Ano',
+  timeSelect: 'Selecionar hora',
+  dateSelect: 'Selecionar data',
+  monthSelect: 'Selecionar mês',
+  yearSelect: 'Selecionar ano',
+  decadeSelect: 'Selecionar década',
+  yearFormat: 'YYYY',
+  monthFormat: 'MMMM',
+  dateFormat: 'D/M/YYYY',
+  dayFormat: 'D',
+  dateTimeFormat: 'D/M/YYYY HH:mm:ss',
+  monthBeforeYear: true
+};
