@@ -5,6 +5,7 @@ import './App.css';
 
 import FundsTable from './FundsTable';
 import FundsBubbleChart from './FundsBubbleChart';
+import FundsBarChart from './FundsBarChart';
 
 class App extends Component {
   render() {
@@ -14,6 +15,8 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
+
+        <FundsBarChart />
         <FundsBubbleChart />
         <FundsTable />
       </div>
