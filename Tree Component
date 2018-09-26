@@ -1,0 +1,223 @@
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import * as d3 from 'd3';
+let treeView = {};
+treeView.root = {};
+treeView.domNode = undefined;
+treeView.createTree = function(treeData,svgDomNode,width,height){
+    var margin = { top: 40, right: 90, bottom: 50, left: 90 },
+            width = 660 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+            this.domNode = svgDomNode;
+      
+     this.svg = d3.select(svgDomNode)
+            .attr("width", width + margin.right + margin.left)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate("
+                + margin.left + "," + margin.top + ")");
+    var root = d3.hierarchy(treeData, function (d) { return d.children; });
+    root.x0 = height / 2;
+    root.y0 = 0;
+        
+    if(root && root.children && root.children.length>0){
+        root.children.forEach(this.collapse);
+    }
+    this.root = root;
+    this.treemap = d3.tree().size([height, width]);
+    this.updateTree(root);
+}
+treeView.collapse = function(d){
+    if (d.children) {
+        d._children = d.children
+        d._children.forEach(treeView.collapse)
+        d.children = null
+    }
+}
+treeView.click = function(d) {
+    if (d.children) {
+        d._children = d.children;
+        d.children = null;
+    } else {
+        d.children = d._children;
+        d._children = null;
+    }
+    if(d.children || d._children){
+        treeView.updateTree(d);
+    }
+   
+}
+treeView.updateTree = function(source){
+    var i = 0;
+    var rectW = 60;
+    var rectH = 30;
+    var treeData = this.treemap(this.root);
+    
+    // Compute the new tree layout.
+    var nodes = treeData.descendants(),
+        links = treeData.descendants().slice(1);
+
+    // Normalize for fixed-depth.
+    nodes.forEach(function (d) { d.y = d.depth * 100 });
+
+    // ****************** Nodes section ***************************
+
+    // Update the nodes...
+    var node = this.svg.selectAll('g.node')
+        .data(nodes, function (d) { return d.id || (d.id = ++i); });
+ 
+  
+    // Enter any new modes at the parent's previous position.
+    var nodeEnter = node.enter().append('g')
+        .attr('class', 'node')
+        .attr("transform", function (d) {
+            return "translate(" + source.y0 + "," + source.x0 + ")";
+        })
+        .on('click', this.click);
+
+    // Add Circle for the nodes
+  /*   nodeEnter.append('circle')
+        .attr('class', 'node')
+        .attr('r', 1e-6)
+        .style("fill", function (d) {
+            return d._children ? "lightsteelblue" : "#fff";
+        });
+
+    // Add labels for the nodes
+    nodeEnter.append('text')
+        .attr("dy", ".35em")
+        .attr("x", function (d) {
+            return d.children || d._children ? -13 : 13;
+        })
+        .attr("text-anchor", function (d) {
+            return d.children || d._children ? "end" : "start";
+        })
+        .text(function (d) { return d.data.name; }); */
+    nodeEnter.append("rect")
+        .attr("width", rectW)
+        .attr("height", rectH)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .style("fill", function (d) {
+            return d._children ? "lightsteelblue" : "#fff";
+        });
+    nodeEnter.append("text")
+        .attr("x", rectW / 2)
+        .attr("y", rectH / 2)
+        .attr("dy", ".35em")
+        .attr("text-anchor", "middle")
+        .text(function (d) {
+            return d.data.name;
+        });
+    // UPDATE
+    var nodeUpdate = nodeEnter.merge(node);
+
+    // Transition to the proper position for the node
+    nodeUpdate.transition()
+        .duration(750)
+        .attr("transform", function (d) {
+            return "translate(" + d.y + "," + d.x + ")";
+        });
+
+    // Update the node attributes and style
+    nodeUpdate.select('circle.node')
+        .attr('r', 10)
+        .style("fill", function (d) {
+            return d._children ? "lightsteelblue" : "#fff";
+        })
+        .attr('cursor', 'pointer');
+
+
+    // Remove any exiting nodes
+    var nodeExit = node.exit().transition()
+        .duration(750)
+        .attr("transform", function (d) {
+            return "translate(" + source.y + "," + source.x + ")";
+        })
+        .remove();
+
+    // On exit reduce the node circles size to 0
+    nodeExit.select('circle')
+        .attr('r', 1e-6);
+
+    // On exit reduce the opacity of text labels
+    nodeExit.select('text')
+        .style('fill-opacity', 1e-6);
+
+    // ****************** links section ***************************
+
+    // Update the links...
+    var link = this.svg.selectAll('path.link')
+        .data(links, function (d) { return d.id; });
+
+    // Enter any new links at the parent's previous position.
+    var linkEnter = link.enter().insert('path', "g")
+        .attr("class", "link")
+        .attr('d', function (d) {
+            var s = { x: source.x0, y: source.y0 };
+            var d =  { x: source.x0, y: source.y0 };
+            var path = `M ${s.y} ${s.x}
+            C ${(s.y + d.y) / 2} ${s.x},
+              ${(s.y + d.y) / 2} ${d.x},
+              ${d.y} ${d.x}`;
+
+                 return path;
+        });
+
+    // UPDATE
+    var linkUpdate = linkEnter.merge(link);
+
+    // Transition back to the parent element position
+    linkUpdate.transition()
+        .duration(750)
+        .attr('d', function (d) {
+            var s = d;
+            var d =  d.parent;
+            var path = `M ${s.y} ${s.x}
+            C ${(s.y + d.y) / 2} ${s.x},
+              ${(s.y + d.y) / 2} ${d.x},
+              ${d.y} ${d.x}`;
+
+                 return path;
+        });
+
+    // Remove any exiting links
+    var linkExit = link.exit().transition()
+        .duration(750)
+        .attr('d', function (d) {
+            var s = { x: source.x0, y: source.y0 };
+            var d =  { x: source.x0, y: source.y0 };
+            var path = `M ${s.y} ${s.x}
+            C ${(s.y + d.y) / 2} ${s.x},
+              ${(s.y + d.y) / 2} ${d.x},
+              ${d.y} ${d.x}`;
+
+                 return path;
+        })
+        .remove();
+
+    // Store the old positions for transition.
+    nodes.forEach(function (d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
+    });
+    
+}
+class TreeComponent extends Component {
+
+    constructor(props) {
+        super(props);
+    // declares a tree layout and assigns the size
+    }
+    componentDidMount() {
+        var dom = ReactDOM.findDOMNode(this);
+        treeView.createTree(this.props.data, dom);
+    }
+    // Toggle children on click.
+    render() {
+        return (
+            <svg></svg>
+        );
+    }
+}
+export default TreeComponent;
